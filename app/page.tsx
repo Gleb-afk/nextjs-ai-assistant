@@ -1,33 +1,72 @@
-"use client";
-
-import Link from "next/link";
+// app/page.tsx
+'use client'
+import { useAIContext } from '@/context/AIContext'
 
 export default function HomePage() {
+  const { suggestions, dismissSuggestion, applySuggestion } = useAIContext()
+
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 text-white p-8">
-      <h1 className="text-5xl font-bold tracking-tight text-center">
-        Добро пожаловать в AI Assistant 🚀
-      </h1>
-      <p className="mt-4 text-xl text-gray-300 text-center max-w-lg">
-        Ваш персональный помощник на базе искусственного интеллекта. Запросите код, информацию или идеи — всё в одном месте!
-      </p>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">AI Ассистент</h1>
+      
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4">
+          Рекомендации
+          <span className="ml-2 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
+            {suggestions.length}
+          </span>
+        </h2>
 
-      <div className="flex space-x-4 mt-6">
-        <Link href="/chat">
-          <button className="px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-400 transition-all text-white font-semibold text-lg">
-            🔥 Начать чат
-          </button>
-        </Link>
-        <Link href="/docs">
-          <button className="px-6 py-3 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all text-white font-semibold text-lg">
-            📖 Документация
-          </button>
-        </Link>
-      </div>
+        {suggestions.length > 0 ? (
+          <div className="space-y-4">
+            {suggestions.map((suggestion) => (
+              <div key={suggestion.id} className="ai-recommendation">
+                <div className="flex justify-between">
+                  <div>
+                    <h3 className="font-medium">{suggestion.title}</h3>
+                    <p className="text-gray-600 text-sm">{suggestion.message}</p>
+                  </div>
+                  <button 
+                    onClick={() => dismissSuggestion(suggestion.id)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                </div>
 
-      <div className="absolute bottom-4 text-gray-400 text-sm">
-        © {new Date().getFullYear()} AI Assistant, все права защищены.
+                {suggestion.codeSample && (
+                  <div className="mt-3">
+                    <pre className="ai-recommendation-code">
+                      {suggestion.codeSample}
+                    </pre>
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={() => applySuggestion(suggestion)}
+                        className="btn-primary text-sm px-3 py-1"
+                      >
+                        Применить
+                      </button>
+                      <button
+                        onClick={() => suggestion.codeSample && navigator.clipboard.writeText(suggestion.codeSample)}
+                        className={`btn-secondary text-sm px-3 py-1 ${
+                        !suggestion.codeSample ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      disabled={!suggestion.codeSample}
+                      >
+                        Копировать код
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p>Нет активных рекомендаций</p>
+          </div>
+        )}
       </div>
-    </main>
-  );
+    </div>
+  )
 }

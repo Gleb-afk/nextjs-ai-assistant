@@ -1,3 +1,5 @@
+// app/layout.tsx
+import { AIProvider } from '@/context/AIContext'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -6,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'AI Assistant',
-  description: 'Next.js AI Code Assistant',
+  description: 'Next.js AI Assistant Application',
 }
 
 export default function RootLayout({
@@ -17,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
+        <AIProvider>
+          {children}
+        </AIProvider>
       </body>
     </html>
   )
